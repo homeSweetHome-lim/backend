@@ -68,18 +68,18 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }} # 서버 접속 계정 (예: ubuntu, ec2-user)
           key: ${{ secrets.SSH_PRIVATE_KEY }} # SSH 접속을 위한 Private Key
           script: |
-            # 1. GitHub Secret의 내용을 서버에 .env 파일로 생성합니다.
-            #    './backend/.env' 경로는 실제 docker-compose.yml 파일이 있는 위치로 수정해야 합니다.
-            echo "${{ secrets.DOT_ENV }}" > ./backend/.env
+             if [ ! -d "your-repo-name" ]; then       
+               git clone https://github.com/${{ github.repository }}.backend
+             fi
+             
+             cd your-repo-name
 
-            # 2. docker-compose.yml 파일이 있는 프로젝트 폴더로 이동합니다.
-            cd ./backend
+             git pull
+             
+             echo "${{ secrets.DOT_ENV }}" > ./backend/.env
+             cd ./backend
+             
+             sudo docker-compose pull
 
-            # 3. 최신 이미지를 pull 받습니다 (docker-compose가 자동으로 처리해 주기도 합니다).
-            sudo docker-compose pull
-
-            # 4. docker-compose를 사용하여 모든 서비스를 실행(또는 재시작)합니다.
-            #    --build 옵션은 이미지를 새로 빌드하라는 의미입니다.
-            #    -d 옵션은 백그라운드에서 실행하라는 의미입니다.
-            sudo docker-compose up -d --build
+             sudo docker-compose up -d --build
 
