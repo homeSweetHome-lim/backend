@@ -1,4 +1,5 @@
-# 멀티스테이지 빌드를 위한 베이스 이미지
+# 산출물용 Dockerfile
+
 FROM openjdk:24-jdk AS builder
 
 WORKDIR /workspace
@@ -23,12 +24,6 @@ WORKDIR /app
 # 빌드 산출물만 복사
 COPY --from=builder /workspace/build/libs/*.jar /app/app.jar
 
-WORKDIR /app
-
-# 빌드된 JAR 파일 복사
-COPY --from=build /app/build/libs/*.jar app.jar
-
-# 포트 노출
 EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
