@@ -1,12 +1,9 @@
 package com.example.backend.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.example.backend.entity.enums.PropertyType;
+import com.example.backend.entity.enums.TransactionType;
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
@@ -36,10 +33,11 @@ public class Property {
     private String address;
 
     @Column(name = "property_type", length = 20, nullable = false)
-    private String propertyType;
+    private PropertyType propertyType;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "transaction_type", length = 20, nullable = false)
-    private String transactionType;
+    private TransactionType transactionType;
 
     @Column(name = "price", nullable = false)
     private Integer price;
@@ -57,7 +55,7 @@ public class Property {
     private LocalDate contractDate;
 
     @Column(name = "lawd_cd", length = 10)
-    private String lawdCode;
+    private String lawdCode; // 지역 코드
 }
 
 

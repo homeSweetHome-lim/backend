@@ -60,27 +60,27 @@ jobs:
 
     # -------------------- ▼▼▼ SSH 원격 배포 로직 추가 ▼▼▼ --------------------
 
-      # 4. SSH로 서버에 접속하여 배포 스크립트 실행
-      - name: Deploy to Server via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }} # 서버 IP 주소
-          username: ${{ secrets.SSH_USERNAME }} # 서버 접속 계정 (예: ubuntu, ec2-user)
-          key: ${{ secrets.SSH_PRIVATE_KEY }} # SSH 접속을 위한 Private Key
-          command_timeout: 10m
-          script: |
-             REPO_NAME="backend"
-             if [ ! -d "$REPO_NAME" ]; then       
-               git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git $REPO_NAME
-             fi
-             
-             cd $REPO_NAME
-
-             git pull
-             
-             echo "${{ secrets.DOT_ENV }}" > ./.env
-
-             sudo docker-compose pull
-
-             sudo docker-compose up -d --build
-
+#      # 4. SSH로 서버에 접속하여 배포 스크립트 실행
+#      - name: Deploy to Server via SSH
+#        uses: appleboy/ssh-action@v1.0.3
+#        with:
+#          host: ${{ secrets.SSH_HOST }} # 서버 IP 주소
+#          username: ${{ secrets.SSH_USERNAME }} # 서버 접속 계정 (예: ubuntu, ec2-user)
+#          key: ${{ secrets.SSH_PRIVATE_KEY }} # SSH 접속을 위한 Private Key
+#          command_timeout: 10m
+#          script: |
+#             REPO_NAME="backend"
+#             if [ ! -d "$REPO_NAME" ]; then
+#               git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git $REPO_NAME
+#             fi
+#
+#             cd $REPO_NAME
+#
+#             git pull
+#
+#             echo "${{ secrets.DOT_ENV }}" > ./.env
+#
+#             sudo docker-compose pull
+#
+#             sudo docker-compose up -d --build
+#
