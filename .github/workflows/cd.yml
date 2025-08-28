@@ -57,3 +57,25 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/our-home:latest # Docker 이미지 태그
           build-args: |
             JAR_FILE=${{ env.JAR_FILE }} # Dockerfile 내부에서 사용할 변수 전달
+
+    # -------------------- ▼▼▼ SSH 원격 배포 로직 추가 ▼▼▼ --------------------
+
+      # 4. SSH로 서버에 접속하여 배포 스크립트 실행
+      - name: Deploy to Server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }} # 서버 IP 주소
+          username: ${{ secrets.SSH_USERNAME }} # 서버 접속 계정 (예: ubuntu, ec2-user)
+          key: ${{ secrets.SSH_PRIVATE_KEY }} # SSH 접속을 위한 Private Key
+          script: |
+            # Docker Hub에서 최신 이미지를 pull 받습니다.
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/our-home:latest
+            
+            # 기존에 실행 중인 컨테이너가 있다면 중지하고 제거합니다. (없어도 오류가 발생하지 않습니다.)
+            docker stop our-home-container || true
+            docker rm our-home-container || true
+            
+            # 다운로드받은 최신 이미지로 새 컨테이너를 실행합니다.
+            # 포트포워딩: -p [호스트 포트]:[컨테이너 포트]
+            docker run -d --name our-home-container -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/our-home:latest
+
