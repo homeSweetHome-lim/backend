@@ -68,11 +68,11 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }} # 서버 접속 계정 (예: ubuntu, ec2-user)
           key: ${{ secrets.SSH_PRIVATE_KEY }} # SSH 접속을 위한 Private Key
           script: |
-             if [ ! -d "your-repo-name" ]; then       
+             if [ ! -d "backend" ]; then       
                git clone https://github.com/${{ github.repository }}.backend
              fi
              
-             cd your-repo-name
+             cd backend
 
              git pull
              
