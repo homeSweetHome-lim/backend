@@ -67,6 +67,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }} # 서버 IP 주소
           username: ${{ secrets.SSH_USERNAME }} # 서버 접속 계정 (예: ubuntu, ec2-user)
           key: ${{ secrets.SSH_PRIVATE_KEY }} # SSH 접속을 위한 Private Key
+          command_timeout: 10m
           script: |
              REPO_NAME="backend"
              if [ ! -d "$REPO_NAME" ]; then       

@@ -26,10 +26,11 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/data
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=${DATABASE_PASSWORD}
-    depends_on:
-      mysql-db:
-        condition: service_healthy
     restart: unless-stopped
+    env_file:
+      - ./.env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 volumes:
   db_data:
