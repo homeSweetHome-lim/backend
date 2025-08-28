@@ -69,13 +69,13 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }} # SSH 접속을 위한 Private Key
           script: |
             # Docker Hub에서 최신 이미지를 pull 받습니다.
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/our-home:latest
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/our-home:latest
             
             # 기존에 실행 중인 컨테이너가 있다면 중지하고 제거합니다. (없어도 오류가 발생하지 않습니다.)
-            docker stop our-home-container || true
-            docker rm our-home-container || true
+            sudo docker stop our-home-container || true
+            sudo docker rm our-home-container || true
             
             # 다운로드받은 최신 이미지로 새 컨테이너를 실행합니다.
             # 포트포워딩: -p [호스트 포트]:[컨테이너 포트]
-            docker run -d --name our-home-container -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/our-home:latest
+            sudo docker run -d --name our-home-container -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/our-home:latest
 
