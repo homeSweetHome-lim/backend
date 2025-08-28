@@ -26,22 +26,18 @@ jobs:
         echo "${{ secrets.APPLICATION_ENV }}" > .env
       shell: bash
 
-    # 21버전 자바 세팅하기
-    - name: 자바 JDK 24 세팅
+  # 24버전 자바 세팅하기
+    - name: Set up JDK 24
       uses: actions/setup-java@v4
       with:
         java-version: '24'
         distribution: 'temurin'
 
-    # gradle 세팅 
-    - name: gradle 세팅 
-      uses: gradle/gradle-build-action@v3
-      with:
-        gradle-version: 8.7
+  # 'gradle-build-action' 사용 대신, 직접 'gradlew' 스크립트 실행
+    - name: Build with Gradle
+      run: ./gradlew build -x test
 
-    - name: gradle 빌드
-      run: gradle build -x test
-
+      
     # 빌드된 jar 파일을 artifact로 업로드하는 단계
     - name: Upload build artifact
       uses: actions/upload-artifact@v4
