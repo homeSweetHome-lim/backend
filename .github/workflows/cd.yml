@@ -68,17 +68,17 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }} # 서버 접속 계정 (예: ubuntu, ec2-user)
           key: ${{ secrets.SSH_PRIVATE_KEY }} # SSH 접속을 위한 Private Key
           script: |
-             if [ ! -d "backend" ]; then       
-               git clone https://github.com/${{ github.repository }}.backend
+             REPO_NAME="backend"
+             if [ ! -d "$REPO_NAME" ]; then       
+               git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git $REPO_NAME
              fi
              
-             cd backend
+             cd $REPO_NAME
 
              git pull
              
-             echo "${{ secrets.DOT_ENV }}" > ./backend/.env
-             cd ./backend
-             
+             echo "${{ secrets.DOT_ENV }}" > ./.env
+
              sudo docker-compose pull
 
              sudo docker-compose up -d --build
