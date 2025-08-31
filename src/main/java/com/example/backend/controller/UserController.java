@@ -1,20 +1,26 @@
 package com.example.backend.controller;
 
-import com.example.backend.service.UserService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequiredArgsConstructor
-@RequestMapping("/api/users")
-@RestController
-public class UserController {
+import com.example.backend.dto.request.SignupRequest;
+import com.example.backend.service.UserService;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@RestController
+@RequestMapping("/api/users")
+public class UserController {
     private final UserService userService;
 
-    @GetMapping
-    public String getUserInfo(){
-        return userService.getUserInfo();
+    @PostMapping
+    public ResponseEntity<String> create(
+        @RequestBody SignupRequest request
+    ) {
+        return ResponseEntity.ok().body(userService.signup(request));
     }
 }

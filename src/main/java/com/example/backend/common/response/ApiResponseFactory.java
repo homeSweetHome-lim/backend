@@ -15,13 +15,13 @@ public class ApiResponseFactory {
 
     public static <T> ResponseEntity<ApiResponse<Void>> failure(Status status) {
         return ResponseEntity
-                .status(status.getHttpStatus())
-                .body(ApiResponse.failure(status));
+            .status(status.getHttpStatus())
+            .body(ApiResponse.failure(status));
     }
 
     public static <T> ResponseEntity<ApiResponse<T>> failure(Status status, T data) {
         return ResponseEntity
-                .status(status.getHttpStatus())
-                .body(ApiResponse.failure(status, data));
+            .status(status.getHttpStatus())
+            .body(ApiResponse.failure(status, data));
     }
 }

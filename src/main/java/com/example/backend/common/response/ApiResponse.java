@@ -1,12 +1,13 @@
 package com.example.backend.common.response;
 
-import com.example.backend.common.exception.Status;
 import org.springframework.http.HttpStatus;
 
+import com.example.backend.common.Status;
+
 public record ApiResponse<T>(
-        int statusCode,
-        String message,
-        T data
+    int statusCode,
+    String message,
+    T data
 ) {
     public static <T> ApiResponse<T> success() {
         return new ApiResponse<>(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), null);
