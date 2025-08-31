@@ -3,9 +3,14 @@ package com.example.backend.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 
@@ -32,17 +37,12 @@ public class Property {
     @Column(name = "apt_name", length = 100, nullable = false)
     private String aptName;
 
-    @Column(name = "address", length = 255, nullable = false)
-    private String address;
-
+    @Enumerated(EnumType.STRING)
     @Column(name = "property_type", length = 20, nullable = false)
-    private String propertyType;
-
-    @Column(name = "transaction_type", length = 20, nullable = false)
-    private String transactionType;
+    private PropertyType propertyType;
 
     @Column(name = "price", nullable = false)
-    private Integer price;
+    private String price;
 
     @Column(name = "area")
     private Double area;
@@ -53,11 +53,12 @@ public class Property {
     @Column(name = "build_year")
     private Integer buildYear;
 
-    @Column(name = "contract_date")
-    private LocalDate contractDate;
+    @Column(name = "deal_date")
+    private String dealDate;
 
-    @Column(name = "lawd_cd", length = 10)
-    private String lawdCode;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lawd_code_id", nullable = false)
+    private LawdCode lawdCode;
 }
 
 
