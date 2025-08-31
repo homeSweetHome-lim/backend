@@ -1,5 +1,5 @@
 # 멀티스테이지 빌드를 위한 베이스 이미지
-FROM openjdk:24-jdk AS builder
+FROM openjdk:17-jdk-slim AS builder
 
 WORKDIR /workspace
 
@@ -16,7 +16,7 @@ COPY src /workspace/src
 RUN ./gradlew --no-daemon -x test clean bootJar
 
 
-FROM openjdk:24-jdk AS runtime
+FROM openjdk:17-jdk-slim AS runtime
 
 WORKDIR /app
 

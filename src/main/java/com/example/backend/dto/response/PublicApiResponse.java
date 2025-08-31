@@ -3,6 +3,8 @@ package com.example.backend.dto.response;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 /**
  * 공공데이터 포털 부동산 실거래가 API의 전체 응답을 담는 최상위 레코드입니다.
