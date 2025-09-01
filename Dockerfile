@@ -9,7 +9,7 @@ COPY gradle /workspace/gradle
 RUN chmod +x gradlew
 
 # Gradle Wrapper 실행에 필요한 findutils(xargs) 설치 (Oracle Linux 기반 이미지)
-RUN microdnf -y install findutils && microdnf clean all
+RUN apt-get update && apt-get install -y --no-install-recommends findutils && rm -rf /var/lib/apt/lists/*
 
 # 소스 복사 후 빌드 (테스트 제외)
 COPY src /workspace/src
