@@ -22,7 +22,7 @@ public enum CommonStatus implements Status {
     PROPERTY_NOT_FOUND(HttpStatus.NOT_FOUND, "매물이 존재하지 않습니다.", 404),
 
     // 좋아요 목록
-    ALREADY_ADD_FAVORITE(, , );
+    ALREADY_ADD_FAVORITE(HttpStatus.BAD_REQUEST, "이미 좋아요를 누른 매물입니다", 400);
 
     private final HttpStatus httpStatus;
     private final String message;
