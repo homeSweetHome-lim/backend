@@ -1,5 +1,6 @@
 package com.example.backend.common.exception;
 
+import com.example.backend.common.Status;
 import lombok.Getter;
 
 @Getter

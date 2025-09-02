@@ -1,6 +1,6 @@
 package com.example.backend.common.response;
 
-import com.example.backend.common.exception.Status;
+import com.example.backend.common.Status;
 import org.springframework.http.ResponseEntity;
 
 public class ApiResponseFactory {
@@ -13,7 +13,7 @@ public class ApiResponseFactory {
         return ResponseEntity.ok(ApiResponse.success(data));
     }
 
-    public static <T> ResponseEntity<ApiResponse<Void>> failure(Status status) {
+    public static ResponseEntity<ApiResponse<Void>> failure(Status status) {
         return ResponseEntity
             .status(status.getHttpStatus())
             .body(ApiResponse.failure(status));

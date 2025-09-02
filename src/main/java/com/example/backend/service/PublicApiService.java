@@ -13,7 +13,7 @@ import com.example.backend.dto.request.PublicApiRequest;
 import com.example.backend.dto.response.PublicApiResponse;
 import com.example.backend.entity.LawdCode;
 import com.example.backend.entity.Property;
-import com.example.backend.entity.PropertyType;
+import com.example.backend.entity.enums.PropertyType;
 import com.example.backend.repository.LawdCodeRepository;
 import com.example.backend.repository.PropertyRepository;
 

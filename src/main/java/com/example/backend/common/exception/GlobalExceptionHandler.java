@@ -2,6 +2,7 @@ package com.example.backend.common.exception;
 
 import com.example.backend.common.response.ApiResponse;
 import com.example.backend.common.response.ApiResponseFactory;
+import com.example.backend.common.CommonStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;

@@ -1,12 +1,14 @@
 package com.example.backend.controller;
 
+import com.example.backend.common.response.ApiResponse;
+import com.example.backend.common.response.ApiResponseFactory;
+import com.example.backend.dto.response.UserInfoResponse;
+import com.example.backend.security.AuthUser;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-import com.example.backend.dto.request.SignupRequest;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
 import com.example.backend.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -17,10 +19,10 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping
-    public ResponseEntity<String> create(
-        @RequestBody SignupRequest request
-    ) {
-        return ResponseEntity.ok().body(userService.signup(request));
+    @GetMapping
+    public ResponseEntity<ApiResponse<UserInfoResponse>> getUserInfo(
+            @AuthenticationPrincipal AuthUser authUser
+            ) {
+        return ApiResponseFactory.success(userService.getUserInfo(authUser));
     }
 }
