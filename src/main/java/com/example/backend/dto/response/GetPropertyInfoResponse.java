@@ -1,11 +1,12 @@
 package com.example.backend.dto.response;
 
-import com.example.backend.entity.PropertyType;
+import com.example.backend.entity.enums.PropertyType;
 
 import lombok.Builder;
 
 @Builder
-public record GetPropertiesByFilterResponse(
+public record GetPropertyInfoResponse(
+    Long propertyId,
     String state,
     String si,
     String dong,

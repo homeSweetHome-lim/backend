@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.backend.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
     private final UserService userService;
 
+    @Operation(description = "유저 정보 반환")
     @GetMapping
     public ResponseEntity<ApiResponse<UserInfoResponse>> getUserInfo(
             @AuthenticationPrincipal AuthUser authUser

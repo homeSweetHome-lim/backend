@@ -3,21 +3,19 @@ package com.example.backend.service;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.example.backend.common.BusinessException;
 import com.example.backend.common.CommonStatus;
-import com.example.backend.common.response.ApiResponse;
 import com.example.backend.dto.request.GetPropertiesByFilterRequest;
 import com.example.backend.dto.request.PostPropertyRequest;
 import com.example.backend.dto.request.PublicApiRequest;
-import com.example.backend.dto.response.GetPropertiesByFilterResponse;
+import com.example.backend.dto.response.GetPropertyInfoResponse;
 import com.example.backend.entity.LawdCode;
 import com.example.backend.entity.Property;
-import com.example.backend.entity.PropertyType;
+import com.example.backend.entity.enums.PropertyType;
 import com.example.backend.repository.LawdCodeRepository;
 import com.example.backend.repository.PropertyRepository;
 
@@ -45,7 +43,7 @@ public class PropertyService {
             return;
         }
 
-        log.info("총 {}개 지역에 대한 10년치 데이터 수집을 시작합니다...", allLawdCodes.size());
+        log.info("총 {}개 지역에 대한 1년치 데이터 수집을 시작합니다...", allLawdCodes.size());
 
         // 2. 수집할 기간을 설정합니다. (예: 2015년 1월 ~ 2024년 12월)
         YearMonth startMonth = YearMonth.of(2024, 1);
@@ -104,7 +102,7 @@ public class PropertyService {
         publicApiService.requestInfoToPublicApi(publicApiRequest);
     }
 
-    public List<GetPropertiesByFilterResponse> getPropertiesByFilterResponse(GetPropertiesByFilterRequest request) {
+    public List<GetPropertyInfoResponse> getPropertiesByFilterResponse(GetPropertiesByFilterRequest request) {
 
         LawdCode lawdCode = lawdCodeRepository.findByStateAndSiAndDong(request.state(), request.si(), request.dong())
             .orElseThrow(()-> new BusinessException(CommonStatus.LAWD_CODE_NOT_FOUND));
@@ -112,7 +110,8 @@ public class PropertyService {
         List<Property> properties = propertyRepository.findByLawdCode(lawdCode);
 
         return properties.stream()
-            .map(p -> GetPropertiesByFilterResponse.builder()
+            .map(p -> GetPropertyInfoResponse.builder()
+                .propertyId(p.getPropertyId())
                 .propertyType(PropertyType.APT)
                 .buildYear(p.getBuildYear())
                 .price(p.getPrice())
