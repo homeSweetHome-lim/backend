@@ -14,7 +14,6 @@ import com.example.backend.dto.request.GetPropertiesByFilterRequest;
 import com.example.backend.dto.request.PostPropertyRequest;
 import com.example.backend.dto.response.GetPropertyInfoResponse;
 import com.example.backend.service.PropertyService;
-import com.example.backend.service.PublicApiService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
