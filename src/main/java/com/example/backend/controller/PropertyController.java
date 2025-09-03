@@ -4,8 +4,11 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.common.response.ApiResponse;
@@ -32,7 +35,7 @@ public class PropertyController {
         description = "공공데이터포털에 단건으로 데이터 요청")
     @GetMapping
     public ResponseEntity<ApiResponse<Void>> getProperties(
-        PostPropertyRequest request
+        @RequestBody PostPropertyRequest request
     ){
         log.info("controller 진입");
         propertyService.getProperties(request);
@@ -50,11 +53,13 @@ public class PropertyController {
     }
 
     @Operation(description = "저장된 데이터 중, 원하는 것을 찾아 반환")
-    @GetMapping("/filter")
+    @GetMapping("/filter/{state}/{si}/{dong}")
     public ResponseEntity<ApiResponse<List<GetPropertyInfoResponse>>> getPropertiesByFilter(
-        GetPropertiesByFilterRequest request
+        @PathVariable String state,
+        @PathVariable String si,
+        @PathVariable String dong
     ){
-        return ApiResponseFactory.success(propertyService.getPropertiesByFilterResponse(request));
+        return ApiResponseFactory.success(propertyService.getPropertiesByFilterResponse(state, si, dong));
     }
 
 }

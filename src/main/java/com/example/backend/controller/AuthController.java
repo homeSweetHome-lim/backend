@@ -14,7 +14,9 @@ import com.example.backend.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
 @RestController
@@ -35,6 +37,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse<String>> login(
         @RequestBody LoginRequest request
     ){
+        log.info("로그인 요청");
         return ApiResponseFactory.success(authService.login(request));
     }
 }

@@ -102,9 +102,10 @@ public class PropertyService {
         publicApiService.requestInfoToPublicApi(publicApiRequest);
     }
 
-    public List<GetPropertyInfoResponse> getPropertiesByFilterResponse(GetPropertiesByFilterRequest request) {
+    public List<GetPropertyInfoResponse> getPropertiesByFilterResponse(String state, String si, String dong) {
 
-        LawdCode lawdCode = lawdCodeRepository.findByStateAndSiAndDong(request.state(), request.si(), request.dong())
+        log.info("도 : {}, 시: {}, 동 : {}", state, si, dong);
+        LawdCode lawdCode = lawdCodeRepository.findByStateAndSiAndDong(state, si, dong)
             .orElseThrow(()-> new BusinessException(CommonStatus.LAWD_CODE_NOT_FOUND));
 
         List<Property> properties = propertyRepository.findByLawdCode(lawdCode);
