@@ -1,6 +1,6 @@
 package com.example.backend.dto.request;
 
-public record GetPropertyRequest(
+public record PostPropertyRequest(
     String state,
     String si,
     String dong,

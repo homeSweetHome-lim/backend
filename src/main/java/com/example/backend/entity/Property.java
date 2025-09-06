@@ -12,6 +12,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import com.example.backend.entity.enums.PropertyType;
+import com.example.backend.entity.enums.TransactionType;
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
@@ -40,6 +44,10 @@ public class Property {
     @Enumerated(EnumType.STRING)
     @Column(name = "property_type", length = 20, nullable = false)
     private PropertyType propertyType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "transaction_type", length = 20, nullable = false)
+    private TransactionType transactionType;
 
     @Column(name = "price", nullable = false)
     private String price;

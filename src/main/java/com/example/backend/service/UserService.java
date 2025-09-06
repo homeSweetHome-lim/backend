@@ -1,30 +1,29 @@
 package com.example.backend.service;
 
+import com.example.backend.common.CommonStatus;
+import com.example.backend.common.exception.BusinessException;
+import com.example.backend.dto.response.UserInfoResponse;
+import com.example.backend.entity.User;
+import com.example.backend.security.AuthUser;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.example.backend.dto.request.SignupRequest;
-import com.example.backend.entity.Users;
-import com.example.backend.repository.UsersRepository;
+import com.example.backend.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UsersRepository usersRepository;
+    private final UserRepository userRepository;
 
-    public String signup(SignupRequest request) {
-        // 예외 추가하기
-        // if (!usersRepository.findUsersByEmail(request.email()).isEmpty()){
-        //     return
-        // };
-        Users user = Users.builder()
-            .email(request.email())
-            .password(request.password())
-            .nickname(request.nickname())
-            .build();
-        usersRepository.save(user);
+    public UserInfoResponse getUserInfo(AuthUser authUser) {
+        User findUser = userRepository.findUserByEmail(authUser.user().getEmail())
+                .orElseThrow(() -> new BusinessException(CommonStatus.USER_NOT_FOUND));
 
-        return "회원가입 완료";
+        return UserInfoResponse.builder()
+                .email(findUser.getEmail())
+                .nickname(findUser.getNickname())
+                .build();
     }
 }
