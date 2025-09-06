@@ -1,4 +1,4 @@
-name: CD 
+name: CD
 
 on:
    # CI 워크플로우가 완료되었을 때만 실행
@@ -6,17 +6,17 @@ on:
     workflows: ["Java CI with Gradle"]
     types:
       - completed
-      
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }} # CI가 성공적으로 끝나면 실행
-    
+
     permissions:
       contents: read
       packages: write
       actions: read
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -26,7 +26,7 @@ jobs:
         with:
           name: build-jar # CI에서 업로드한 아티팩트 이름과 동일하게 지정
           path: build/libs/ # 다운로드할 경로
-          run-id: ${{ github.event.workflow_run.id }} 
+          run-id: ${{ github.event.workflow_run.id }}
           repository: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -58,27 +58,27 @@ jobs:
           build-args: |
             JAR_FILE=${{ env.JAR_FILE }} # Dockerfile 내부에서 사용할 변수 전달
 
-    # -------------------- ▼▼▼ SSH 원격 배포 로직 추가 ▼▼▼ --------------------
+     # -------------------- ▼▼▼ SSH 원격 배포 로직 추가 ▼▼▼ --------------------
 
       # 4. SSH로 서버에 접속하여 배포 스크립트 실행
       - name: Deploy to Server via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SSH_HOST }} # 서버 IP 주소
-          username: ${{ secrets.SSH_USERNAME }} # 서버 접속 계정 (예: ubuntu, ec2-user)
-          key: ${{ secrets.SSH_PRIVATE_KEY }} # SSH 접속을 위한 Private Key
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           command_timeout: 10m
           script: |
              REPO_NAME="backend"
-             if [ ! -d "$REPO_NAME" ]; then       
+             if [ ! -d "$REPO_NAME" ]; then
                git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git $REPO_NAME
              fi
-             
+
              cd $REPO_NAME
 
              git pull
-             
-             echo "${{ secrets.DOT_ENV }}" > ./.env
+
+             echo "${{ secrets.APPLICATION_ENV }}" > ./.env
 
              sudo docker-compose pull
 

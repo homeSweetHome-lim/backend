@@ -10,16 +10,21 @@ import com.example.backend.common.response.ApiResponse;
 import com.example.backend.common.response.ApiResponseFactory;
 import com.example.backend.dto.request.LoginRequest;
 import com.example.backend.dto.request.SignupRequest;
+import com.example.backend.dto.response.LoginResponse;
 import com.example.backend.service.AuthService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
 @RestController
 public class AuthController {
     private final AuthService authService;
 
+    @Operation(description = "회원가입 - 이메일, 비번, 닉네임")
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<Void>> signUp(
         @RequestBody SignupRequest signupRequest
@@ -28,10 +33,12 @@ public class AuthController {
         return ApiResponseFactory.success();
     }
 
+    @Operation(description = "이메일과 비밀번호로 로그인 -> 토큰 발급")
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<String>> login(
+    public ResponseEntity<ApiResponse<LoginResponse>> login(
         @RequestBody LoginRequest request
     ){
+        log.info("로그인 요청");
         return ApiResponseFactory.success(authService.login(request));
     }
 }

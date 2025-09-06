@@ -7,6 +7,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,6 +17,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.example.backend.security.JwtAuthorizationFilter;
 import com.example.backend.security.JwtUtil;
 import com.example.backend.security.UserDetailsServiceImpl;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -37,14 +43,14 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // CSRF 설정 비활성화
-        http.csrf((csrf) -> csrf.disable());
+        http.csrf(AbstractHttpConfigurer::disable);
         // 세션 관리 방식을 STATELESS(상태 비저장)로 설정
         http.sessionManagement((sessionManagement) ->
             sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
 
-        // CORS 기본 허용 (필요 시 CorsConfigurationSource 주입해 상세 설정)
-        http.cors(cors -> {});
+        // 커스텀으로 CORS 설정
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         // 예외 처리 최소 구성 (인증 실패/권한 부족 시 401/403)
         http.exceptionHandling(ex -> ex
@@ -67,5 +73,30 @@ public class WebSecurityConfig {
         http.addFilterBefore(new JwtAuthorizationFilter(jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    //Cors 설정
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        // 1. 허용할 URL 설정하기
+        configuration.setAllowedOrigins(List.of("https://home.mins.work", "http://localhost:3000"));
+
+        // 2. 허용할 HTTP 메서드
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        // 3. 허용할 HTTP 헤더 설정
+        // 테스트용으로 일단 다 열기
+        configuration.setAllowedHeaders(List.of("*"));
+
+        // 4. Credential 여부 설정 -> 쿠키나 인증 헤더를 주고 받아야하므로 반드시 true
+        configuration.setAllowCredentials(true);
+
+        // 5. 모든 경로에 대해서 위에서 설정한 cors 설정을 적용하기
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
     }
 }

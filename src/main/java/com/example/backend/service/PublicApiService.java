@@ -13,7 +13,8 @@ import com.example.backend.dto.request.PublicApiRequest;
 import com.example.backend.dto.response.PublicApiResponse;
 import com.example.backend.entity.LawdCode;
 import com.example.backend.entity.Property;
-import com.example.backend.entity.PropertyType;
+import com.example.backend.entity.enums.PropertyType;
+import com.example.backend.entity.enums.TransactionType;
 import com.example.backend.repository.LawdCodeRepository;
 import com.example.backend.repository.PropertyRepository;
 
@@ -67,6 +68,7 @@ public class PublicApiService {
                     .aptName(item.aptName())
                     .dealDate(LocalDate.of(item.dealYear(), item.dealMonth(), item.dealDay()).toString())
                     .lawdCode(getLawdCode(item.sggCode(), item.umdName()))
+                    .transactionType(TransactionType.SALE)
                     .build()).collect(Collectors.toList());
 
         log.info("리스트로 변환 완료");

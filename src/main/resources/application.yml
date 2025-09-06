@@ -1,9 +1,14 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
+    # 집
     url: jdbc:mysql://localhost:3307/dev?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
     password: 11111111
+    # 회사
+#    url: jdbc:mysql://localhost:3306/db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+#    username: root
+#    password: 1234
 
 
   jpa:
@@ -17,4 +22,8 @@ spring:
         use_sql_comments: true
 jwt:
   secret:
-    key: 7KCA64WB7JeQ6rOg6riw66i57J2E6rGw7JW87KCQ7Ius7JeQ64qU7IOM65Oc7JyE7LmY66i57JeI6rOg7KeA6riI7J2A7JWE7JWE66mU
+    key: ${JWT_SECRET}
+
+public:
+  api:
+    key: ${PUBLIC_API_KEY}

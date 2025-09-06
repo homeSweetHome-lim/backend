@@ -21,6 +21,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         User user = userRepository.findUserByEmail(email).orElseThrow(
             ()-> new BusinessException(CommonStatus.USER_NOT_FOUND));
 
-        return new UserDetailsImpl(user);
+        return new AuthUser(user);
     }
 }
