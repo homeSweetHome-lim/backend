@@ -10,6 +10,7 @@ import com.example.backend.common.response.ApiResponse;
 import com.example.backend.common.response.ApiResponseFactory;
 import com.example.backend.dto.request.LoginRequest;
 import com.example.backend.dto.request.SignupRequest;
+import com.example.backend.dto.response.LoginResponse;
 import com.example.backend.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,7 +35,7 @@ public class AuthController {
 
     @Operation(description = "이메일과 비밀번호로 로그인 -> 토큰 발급")
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<String>> login(
+    public ResponseEntity<ApiResponse<LoginResponse>> login(
         @RequestBody LoginRequest request
     ){
         log.info("로그인 요청");

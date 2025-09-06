@@ -4,6 +4,7 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -27,8 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class PropertyService {
 
-    // @Value("${PUBLIC_API_KEY}")
-    // private String apiKey;
+    @Value("${public.api.key}")
+    private String apiKey;
 
     private final LawdCodeRepository lawdCodeRepository;
     private final PropertyRepository propertyRepository;
@@ -57,7 +58,7 @@ public class PropertyService {
                 log.info("거래 년월 : {}", dealYmd);
                 try {
                     PublicApiRequest publicApiRequest = PublicApiRequest.builder()
-                        .serviceKey("932714ab5d2f096dd8dea699916ee5cfbe0a9496dfa19d6f13bfa8a379551022")
+                        .serviceKey(apiKey)
                         .lawdCode(lawdCode)
                         .dealYmd(dealYmd)
                         .build();

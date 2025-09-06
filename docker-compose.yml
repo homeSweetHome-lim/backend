@@ -1,13 +1,24 @@
 version: '3.8'
 services:
-  backend-app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: backend-container
+  # 메인 백엔드 서버
+  main-server:
+    container_name: main-server
+    image: minjee12/our-home:latest # GitHub Actions에서 빌드한 이미지
+    restart: always
     ports:
       - "8080:8080"
-    depends_on:
-      mysql-db:
-        condition: service_healthy
-    restart: unless-stopped
+    environment:
+      # ✅ DB_HOST를 공유 DB 컨테이너의 이름으로 변경합니다.
+      - DB_HOST=share-mysql
+      - DB_PORT=3307
+      # ✅ 이 프로젝트가 사용할 DB 스키마와 사용자 정보를 입력합니다.
+      - DB_DATABASE=home_db
+      - DB_USER=min
+      - DB_PASSWORD=${MYSQL_PASSWORD}
+    networks:
+      - shared-net
+
+    # ✅ 'shared-net'이 이 파일 외부에서 생성된 네트워크임을 명시.
+networks:
+  shared-net:
+    external: true
