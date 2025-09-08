@@ -83,7 +83,7 @@ jobs:
 
              REPO_NAME="backend"
              if [ ! -d "$REPO_NAME" ]; then
-               git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git $REPO_NAME
+               git clone https://${{ secrets.GIT_TOKEN }}@github.com/${{ github.repository }}.git $REPO_NAME
              fi
 
              cd $REPO_NAME
