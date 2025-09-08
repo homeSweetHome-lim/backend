@@ -70,6 +70,7 @@ jobs:
           command_timeout: 10m
           script: |
              set -e
+             
              REPO_NAME="backend"
              if [ ! -d "$REPO_NAME" ]; then
                git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git $REPO_NAME
