@@ -14,7 +14,7 @@ public interface PropertyRepository extends JpaRepository<Property, Long> {
 
     boolean existsByAptName(String aptName);
 
-    Property findByAptName(String aptName);
+    List<Property> findByAptName(String aptName);
 
     List<Property> findByAptNameIn(Collection<String> aptNames);
     

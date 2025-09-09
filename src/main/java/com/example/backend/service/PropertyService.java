@@ -1,9 +1,12 @@
 package com.example.backend.service;
 
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.example.backend.dto.response.GetPropertyPrices;
@@ -54,8 +57,8 @@ public class PropertyService {
         log.info("총 {}개 지역에 대한 1년치 데이터 수집을 시작합니다...", allLawdCodes.size());
 
         // 2. 수집할 기간을 설정합니다. (예: 2015년 1월 ~ 2024년 12월)
-        YearMonth startMonth = YearMonth.of(2025, 1);
-        YearMonth endMonth = YearMonth.of(2025, 6);
+        YearMonth startMonth = YearMonth.of(2023, 8);
+        YearMonth endMonth = YearMonth.of(2025, 8);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMM");
         // 3. 중첩 반복문: (바깥쪽) 지역 코드 -> (안쪽) 날짜
@@ -271,19 +274,20 @@ public class PropertyService {
         }
     }
 
-    /**
-     * 특정 Property에 대해 실시간으로 가격 범위를 업데이트
-     * @param propertyId Property ID
-     * @param newPrice 새로운 거래 가격
-     */
-    @Transactional
-    public void updatePropertyPriceRealTime(Long propertyId, Integer newPrice) {
-        Property property = propertyRepository.findById(propertyId)
-                .orElseThrow(() -> new BusinessException(CommonStatus.PROPERTY_NOT_FOUND));
-        
-        property.updatePriceWithSingleValue(newPrice);
-        log.info("Property ID {} 의 가격 범위가 실시간 업데이트되었습니다: {} ~ {}", 
-                 propertyId, property.getMinPrice(), property.getMaxPrice());
+    public GetPropertyPrices getPropertyPrices(Long propertyId) {
+        Property property = propertyRepository.findById(propertyId).orElseThrow(
+            () -> new BusinessException(CommonStatus.PROPERTY_NOT_FOUND));
+        List<PropertyDetail> properties = propertyDetailRepository.findByProperty(property);
+
+        Map<LocalDate, String> datePriceMap = new HashMap<>();
+        for (PropertyDetail p : properties) {
+            datePriceMap.put(p.getDealDate(), p.getPrice());
+        }
+        return GetPropertyPrices.builder()
+            .maxPrice(property.getMaxPrice().toString())
+            .minPrice(property.getMinPrice().toString())
+            .priceWithDateList(datePriceMap)
+            .build();
     }
 }
 

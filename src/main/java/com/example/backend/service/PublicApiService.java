@@ -101,7 +101,7 @@ public class PublicApiService {
             
             PropertyDetail propertyDetail = PropertyDetail.builder()
                     .floor(p.floor())
-                    .dealDate(LocalDate.of(p.dealYear(), p.dealMonth(), p.dealDay()).toString())
+                    .dealDate(LocalDate.of(p.dealYear(), p.dealMonth(), p.dealDay()))
                     .area(p.exclusiveUseArea())
                     .price(p.dealAmount())
                     .transactionType(TransactionType.SALE)

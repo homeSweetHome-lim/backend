@@ -1,5 +1,7 @@
 package com.example.backend.entity;
 
+import java.time.LocalDate;
+
 import com.example.backend.entity.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -30,7 +32,7 @@ public class PropertyDetail {
     private Integer floor;
 
     @Column(name = "deal_date")
-    private String dealDate;
+    private LocalDate dealDate;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "transaction_type", length = 20, nullable = false)

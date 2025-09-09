@@ -4,19 +4,11 @@ import lombok.Builder;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @Builder
 public record GetPropertyPrices(
         String maxPrice,
         String minPrice,
-        List<priceWithDate> priceList
-) {
-    public static class priceWithDate{
-        private final LocalDate date;
-        private final String price;
-        public priceWithDate(LocalDate date, String price) {
-            this.date = date;
-            this.price = price;
-        }
-    }
-}
+        Map<LocalDate, String> priceWithDateList
+) {}
