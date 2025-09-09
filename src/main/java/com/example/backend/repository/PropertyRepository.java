@@ -17,4 +17,11 @@ public interface PropertyRepository extends JpaRepository<Property, Long> {
     Property findByAptName(String aptName);
 
     List<Property> findByAptNameIn(Collection<String> aptNames);
+    
+    /**
+     * 특정 아파트 이름의 모든 Property를 조회
+     * @param aptName 아파트 이름
+     * @return 해당 아파트 이름의 모든 Property 리스트
+     */
+    List<Property> findAllByAptName(String aptName);
 }

@@ -26,11 +26,11 @@ public record AuthUser(User user) implements UserDetails {
 
     @Override
     public String getPassword() {
-        return "";
+        return user.getPassword(); // 실제 사용자 패스워드 반환
     }
 
     @Override
     public String getUsername() {
-        return "";
+        return user.getEmail(); // 사용자의 이메일을 username으로 사용
     }
 }

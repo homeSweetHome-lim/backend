@@ -70,27 +70,11 @@ public class FavoriteService {
                 .state(p.getLawdCode().getState())
                 .si(p.getLawdCode().getSi())
                 .dong(p.getLawdCode().getDong())
-                .maxPrice(getPrice(propertyDetailRepository.findByProperty(p).stream().map(
-                        PropertyDetail::getPrice).toList())[1])
-                .minPrice(getPrice(propertyDetailRepository.findByProperty(p).stream().map(
-                        PropertyDetail::getPrice).toList())[0])
-                .area(p.getArea())
-                .floor(p.getFloor())
+                .maxPrice(p.getMaxPrice())
+                .minPrice(p.getMinPrice())
                 .buildYear(p.getBuildYear())
-                .dealDate(p.getDealDate())
                 .aptName(p.getAptName())
                 .propertyType(p.getPropertyType())
                 .build()).toList();
-    }
-
-    private int[] getPrice(List<String> prices){
-        int[] minMaxPrice = new int[2];
-        IntSummaryStatistics stats = prices.stream()
-                .mapToInt(p -> Integer.parseInt(p.replace(",", "")))
-                .summaryStatistics();
-        minMaxPrice[0] = stats.getMin();
-        minMaxPrice[1] = stats.getMax();
-
-        return minMaxPrice;
     }
 }

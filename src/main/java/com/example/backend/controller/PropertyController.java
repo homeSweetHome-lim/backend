@@ -62,12 +62,26 @@ public class PropertyController {
         return ApiResponseFactory.success(propertyService.getPropertiesByFilterResponse(state, si, dong));
     }
 
-    @Operation(description = "property Id로 집을 찾아서 그 집의 가격+날짜 리스트와 최저&최대 가격 반환")
-    @GetMapping("/price/{propertyId}")
-    public ResponseEntity<ApiResponse<GetPropertyPrices>> getPropertiyPrices(
-            @PathVariable Long propertyId
-            ){
-        return ApiResponseFactory.success(propertyService.getPropertyPrices(propertyId));
+    // @Operation(description = "property Id로 집을 찾아서 그 집의 가격+날짜 리스트와 최저&최대 가격 반환")
+    // @GetMapping("/price/{propertyId}")
+    // public ResponseEntity<ApiResponse<GetPropertyPrices>> getPropertiyPrices(
+    //         @PathVariable Long propertyId
+    //         ){
+    //     return ApiResponseFactory.success(propertyService.getPropertyPrices(propertyId));
+    // }
+
+    @Operation(description = "특정 아파트의 가격 범위를 업데이트합니다")
+    @PostMapping("/price-range/{aptName}")
+    public ResponseEntity<ApiResponse<Void>> updatePriceRange(@PathVariable String aptName) {
+        propertyService.updatePriceRangeForApartment(aptName);
+        return ResponseEntity.ok().body(ApiResponse.success());
+    }
+
+    @Operation(description = "모든 아파트의 가격 범위를 일괄 업데이트합니다")
+    @PostMapping("/price-range/update-all")
+    public ResponseEntity<ApiResponse<Void>> updateAllPriceRanges() {
+        propertyService.updateAllApartmentPriceRanges();
+        return ResponseEntity.ok().body(ApiResponse.success());
     }
 
 }
