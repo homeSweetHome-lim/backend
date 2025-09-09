@@ -4,6 +4,8 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import com.example.backend.dto.response.GetPropertyPrices;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -126,5 +128,20 @@ public class PropertyService {
                 .si(lawdCode.getSi())
                 .build())
             .toList();
+    }
+
+    @Transactional
+    public GetPropertyPrices getPropertyPrices(Long propertyId) {
+
+        Property property = propertyRepository.findById(propertyId)
+                .orElseThrow(()->new BusinessException(CommonStatus.PROPERTY_NOT_FOUND));
+
+
+
+        return GetPropertyPrices.builder()
+                .maxPrice()
+                .minPrice()
+                .priceList()
+                .build();
     }
 }

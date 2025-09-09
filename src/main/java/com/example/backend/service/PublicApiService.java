@@ -1,9 +1,14 @@
 package com.example.backend.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.example.backend.entity.PropertyDetail;
+import com.example.backend.repository.PropertyDetailRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -29,6 +34,7 @@ public class PublicApiService {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final PropertyRepository propertyRepository;
+    private final PropertyDetailRepository propertyDetailRepository;
     private final LawdCodeRepository lawdCodeRepository;
 
     @Transactional
@@ -54,25 +60,44 @@ public class PublicApiService {
         savePropertiesInfo(response);
     }
 
-    private void savePropertiesInfo(PublicApiResponse response) {
+    @Transactional
+    protected void savePropertiesInfo(PublicApiResponse response) {
+        List<PublicApiResponse.TradeItem> tradeItems = response.body().items().itemList();
 
-        log.info("받은 답변을 저장하기 로직 진입");
-        List<Property> properties = response.body().items().itemList().stream()
-            .map(
-                item -> Property.builder()
-                    .floor(item.floor())
-                    .price(item.dealAmount())
-                    .area(item.exclusiveUseArea())
-                    .propertyType(PropertyType.APT)
-                    .buildYear(item.buildYear())
-                    .aptName(item.aptName())
-                    .dealDate(LocalDate.of(item.dealYear(), item.dealMonth(), item.dealDay()).toString())
-                    .lawdCode(getLawdCode(item.sggCode(), item.umdName()))
+        Set<String> aptNamesInRequest = tradeItems.stream()
+                .map(PublicApiResponse.TradeItem::aptName)
+                .collect(Collectors.toSet());
+
+        Map<String, Property> existingPropertiesMap = propertyRepository.findByAptNameIn(aptNamesInRequest).stream()
+                .collect(Collectors.toMap(Property::getAptName, property -> property));
+
+        List<Property> newPropertiesToSave = new ArrayList<>();
+        List<PropertyDetail> detailsToSave = new ArrayList<>();
+
+        for (PublicApiResponse.TradeItem p : response.body().items().itemList()){
+            Property property = existingPropertiesMap.get(p.aptName());
+            if (property == null) {
+                property = Property.builder()
+                        .propertyType(PropertyType.APT)
+                        .buildYear(p.buildYear())
+                        .aptName(p.aptName())
+                        .lawdCode(getLawdCode(p.sggCode(), p.umdName()))
+                        .build();
+                newPropertiesToSave.add(property);
+                existingPropertiesMap.put(p.aptName(), property);
+            }
+            PropertyDetail propertyDetail = PropertyDetail.builder()
+                    .floor(p.floor())
+                    .dealDate(LocalDate.of(p.dealYear(), p.dealMonth(), p.dealDay()).toString())
+                    .area(p.exclusiveUseArea())
+                    .price(p.dealAmount())
                     .transactionType(TransactionType.SALE)
-                    .build()).collect(Collectors.toList());
-
-        log.info("리스트로 변환 완료");
-        propertyRepository.saveAll(properties);
+                    .property(property) // 기존 또는 새로 만들어진 Property 객체와 연결
+                    .build();
+            detailsToSave.add(propertyDetail);
+        }
+        propertyRepository.saveAll(newPropertiesToSave);
+        propertyDetailRepository.saveAll(detailsToSave);
     }
 
     private LawdCode getLawdCode(String lawdCode, String umdNm) {

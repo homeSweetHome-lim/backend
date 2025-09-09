@@ -6,7 +6,9 @@ import com.example.backend.dto.request.AddFavoriteRequest;
 import com.example.backend.dto.response.GetPropertyInfoResponse;
 import com.example.backend.entity.Favorite;
 import com.example.backend.entity.Property;
+import com.example.backend.entity.PropertyDetail;
 import com.example.backend.repository.FavoriteRepository;
+import com.example.backend.repository.PropertyDetailRepository;
 import com.example.backend.repository.PropertyRepository;
 import com.example.backend.security.AuthUser;
 
@@ -15,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +27,7 @@ public class FavoriteService {
 
     private final FavoriteRepository favoriteRepository;
     private final PropertyRepository propertyRepository;
+    private final PropertyDetailRepository propertyDetailRepository;
 
     @Transactional
     public void addFavoriteProperty(AuthUser authUser, Long propertyId) {
@@ -66,7 +70,10 @@ public class FavoriteService {
                 .state(p.getLawdCode().getState())
                 .si(p.getLawdCode().getSi())
                 .dong(p.getLawdCode().getDong())
-                .price(p.getPrice())
+                .maxPrice(getPrice(propertyDetailRepository.findByProperty(p).stream().map(
+                        PropertyDetail::getPrice).toList())[1])
+                .minPrice(getPrice(propertyDetailRepository.findByProperty(p).stream().map(
+                        PropertyDetail::getPrice).toList())[0])
                 .area(p.getArea())
                 .floor(p.getFloor())
                 .buildYear(p.getBuildYear())
@@ -74,5 +81,16 @@ public class FavoriteService {
                 .aptName(p.getAptName())
                 .propertyType(p.getPropertyType())
                 .build()).toList();
+    }
+
+    private int[] getPrice(List<String> prices){
+        int[] minMaxPrice = new int[2];
+        IntSummaryStatistics stats = prices.stream()
+                .mapToInt(p -> Integer.parseInt(p.replace(",", "")))
+                .summaryStatistics();
+        minMaxPrice[0] = stats.getMin();
+        minMaxPrice[1] = stats.getMax();
+
+        return minMaxPrice;
     }
 }

@@ -2,6 +2,7 @@ package com.example.backend.controller;
 
 import java.util.List;
 
+import com.example.backend.dto.response.GetPropertyPrices;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,7 +44,6 @@ public class PropertyController {
         return ResponseEntity.ok().body(ApiResponse.success());
     }
 
-    @Operation(description = "비동기로 공공데이터포털에 데이터 요청 및 바로 저장 (1년치)")
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> postProperties(
     ){
@@ -60,6 +60,14 @@ public class PropertyController {
         @PathVariable String dong
     ){
         return ApiResponseFactory.success(propertyService.getPropertiesByFilterResponse(state, si, dong));
+    }
+
+    @Operation(description = "property Id로 집을 찾아서 그 집의 가격+날짜 리스트와 최저&최대 가격 반환")
+    @GetMapping("/price/{propertyId}")
+    public ResponseEntity<ApiResponse<GetPropertyPrices>> getPropertiyPrices(
+            @PathVariable Long propertyId
+            ){
+        return ApiResponseFactory.success(propertyService.getPropertyPrices(propertyId));
     }
 
 }

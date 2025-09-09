@@ -45,24 +45,8 @@ public class Property {
     @Column(name = "property_type", length = 20, nullable = false)
     private PropertyType propertyType;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "transaction_type", length = 20, nullable = false)
-    private TransactionType transactionType;
-
-    @Column(name = "price", nullable = false)
-    private String price;
-
-    @Column(name = "area")
-    private Double area;
-
-    @Column(name = "floor")
-    private Integer floor;
-
     @Column(name = "build_year")
     private Integer buildYear;
-
-    @Column(name = "deal_date")
-    private String dealDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lawd_code_id", nullable = false)
