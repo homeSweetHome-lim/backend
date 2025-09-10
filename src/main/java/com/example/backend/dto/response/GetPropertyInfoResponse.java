@@ -10,12 +10,12 @@ public record GetPropertyInfoResponse(
     String state,
     String si,
     String dong,
-    String price,
-    Double area,
-    Integer floor,
+    int maxPrice,
+    int minPrice,
     Integer buildYear,
     String dealDate,
     String aptName,
     PropertyType propertyType
 ) {
+
 }

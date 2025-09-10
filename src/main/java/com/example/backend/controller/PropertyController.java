@@ -2,6 +2,7 @@ package com.example.backend.controller;
 
 import java.util.List;
 
+import com.example.backend.dto.response.GetPropertyPrices;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,7 +44,7 @@ public class PropertyController {
         return ResponseEntity.ok().body(ApiResponse.success());
     }
 
-    @Operation(description = "비동기로 공공데이터포털에 데이터 요청 및 바로 저장 (1년치)")
+    @Operation(description = "비동기로 데이터 풀링")
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> postProperties(
     ){
@@ -60,6 +61,28 @@ public class PropertyController {
         @PathVariable String dong
     ){
         return ApiResponseFactory.success(propertyService.getPropertiesByFilterResponse(state, si, dong));
+    }
+
+    @Operation(description = "property Id로 집을 찾아서 그 집의 가격+날짜 리스트와 최저&최대 가격 반환")
+    @GetMapping("/price/{propertyId}")
+    public ResponseEntity<ApiResponse<GetPropertyPrices>> getPropertiyPrices(
+            @PathVariable Long propertyId
+            ){
+        return ApiResponseFactory.success(propertyService.getPropertyPrices(propertyId));
+    }
+
+    @Operation(description = "특정 아파트의 가격 범위를 업데이트합니다")
+    @PostMapping("/price-range/{aptName}")
+    public ResponseEntity<ApiResponse<Void>> updatePriceRange(@PathVariable String aptName) {
+        propertyService.updatePriceRangeForApartment(aptName);
+        return ResponseEntity.ok().body(ApiResponse.success());
+    }
+
+    @Operation(description = "모든 아파트의 가격 범위를 일괄 업데이트합니다")
+    @PostMapping("/price-range/update-all")
+    public ResponseEntity<ApiResponse<Void>> updateAllPriceRanges() {
+        propertyService.updateAllApartmentPriceRanges();
+        return ResponseEntity.ok().body(ApiResponse.success());
     }
 
 }
