@@ -44,6 +44,7 @@ public class PropertyController {
         return ResponseEntity.ok().body(ApiResponse.success());
     }
 
+    @Operation(description = "비동기로 데이터 풀링")
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> postProperties(
     ){
