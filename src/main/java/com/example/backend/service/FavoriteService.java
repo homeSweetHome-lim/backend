@@ -2,13 +2,10 @@ package com.example.backend.service;
 
 import com.example.backend.common.CommonStatus;
 import com.example.backend.common.exception.BusinessException;
-import com.example.backend.dto.request.AddFavoriteRequest;
 import com.example.backend.dto.response.GetPropertyInfoResponse;
 import com.example.backend.entity.Favorite;
 import com.example.backend.entity.Property;
-import com.example.backend.entity.PropertyDetail;
 import com.example.backend.repository.FavoriteRepository;
-import com.example.backend.repository.PropertyDetailRepository;
 import com.example.backend.repository.PropertyRepository;
 import com.example.backend.security.AuthUser;
 
@@ -17,9 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.IntSummaryStatistics;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +22,6 @@ public class FavoriteService {
 
     private final FavoriteRepository favoriteRepository;
     private final PropertyRepository propertyRepository;
-    private final PropertyDetailRepository propertyDetailRepository;
 
     @Transactional
     public void addFavoriteProperty(AuthUser authUser, Long propertyId) {
