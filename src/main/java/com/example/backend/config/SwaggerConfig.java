@@ -6,7 +6,10 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+
+import org.springdoc.core.utils.SpringDocUtils;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Pageable;
 
 @Configuration
 @OpenAPIDefinition(
@@ -25,4 +28,7 @@ import org.springframework.context.annotation.Configuration;
 //        in = SecuritySchemeIn.HEADER
 //)
 public class SwaggerConfig {
+    static {
+        SpringDocUtils.getConfig().replaceWithClass(Pageable.class, PageableRequest.class);
+    }
 }

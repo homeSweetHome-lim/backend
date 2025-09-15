@@ -12,6 +12,8 @@ import java.util.Set;
 import com.example.backend.dto.response.GetPropertyPrices;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -113,16 +115,37 @@ public class PropertyService {
         publicApiService.requestInfoToPublicApi(publicApiRequest);
     }
 
-    public List<GetPropertyInfoResponse> getPropertiesByFilterResponse(String state, String si, String dong) {
+    // public List<GetPropertyInfoResponse> getPropertiesByFilterResponse(String state, String si, String dong) {
+    //
+    //     log.info("도 : {}, 시: {}, 동 : {}", state, si, dong);
+    //     LawdCode lawdCode = lawdCodeRepository.findByStateAndSiAndDong(state, si, dong)
+    //         .orElseThrow(()-> new BusinessException(CommonStatus.LAWD_CODE_NOT_FOUND));
+    //
+    //     List<Property> properties = propertyRepository.findByLawdCode(lawdCode);
+    //
+    //     return properties.stream()
+    //         .map(p -> GetPropertyInfoResponse.builder()
+    //             .propertyId(p.getPropertyId())
+    //             .propertyType(PropertyType.APT)
+    //             .buildYear(p.getBuildYear())
+    //             .minPrice(p.getMinPrice())
+    //             .maxPrice(p.getMaxPrice())
+    //             .aptName(p.getAptName())
+    //             .state(lawdCode.getState())
+    //             .dong(lawdCode.getDong())
+    //             .si(lawdCode.getSi())
+    //             .build())
+    //         .toList();
+    // }
+    public Page<GetPropertyInfoResponse> getContentList(String state, String si, String dong, Pageable pageable) {
 
         log.info("도 : {}, 시: {}, 동 : {}", state, si, dong);
         LawdCode lawdCode = lawdCodeRepository.findByStateAndSiAndDong(state, si, dong)
             .orElseThrow(()-> new BusinessException(CommonStatus.LAWD_CODE_NOT_FOUND));
 
-        List<Property> properties = propertyRepository.findByLawdCode(lawdCode);
+        Page<Property> properties = propertyRepository.findByLawdCode(lawdCode, pageable);
 
-        return properties.stream()
-            .map(p -> GetPropertyInfoResponse.builder()
+        return properties.map(p -> GetPropertyInfoResponse.builder()
                 .propertyId(p.getPropertyId())
                 .propertyType(PropertyType.APT)
                 .buildYear(p.getBuildYear())
@@ -132,9 +155,9 @@ public class PropertyService {
                 .state(lawdCode.getState())
                 .dong(lawdCode.getDong())
                 .si(lawdCode.getSi())
-                .build())
-            .toList();
+                .build());
     }
+
 
 
     /**
@@ -289,5 +312,7 @@ public class PropertyService {
             .priceWithDateList(datePriceMap)
             .build();
     }
+
+
 }
 
