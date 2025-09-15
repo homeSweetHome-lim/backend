@@ -12,6 +12,8 @@ public record GetPropertyInfoResponse(
     String dong,
     int maxPrice,
     int minPrice,
+    Double maxArea,
+    Double minArea,
     Integer buildYear,
     String dealDate,
     String aptName,

@@ -151,6 +151,8 @@ public class PropertyService {
                 .buildYear(p.getBuildYear())
                 .minPrice(p.getMinPrice())
                 .maxPrice(p.getMaxPrice())
+                .minArea(p.getMinArea())
+                .maxArea(p.getMaxArea())
                 .aptName(p.getAptName())
                 .state(lawdCode.getState())
                 .dong(lawdCode.getDong())
@@ -231,6 +233,72 @@ public class PropertyService {
     }
 
     /**
+     * 특정 아파트 이름의 모든 Property에 대해 최소/최대 면적을 업데이트
+     * @param aptName 아파트 이름
+     */
+    @Transactional
+    public void updateAreaRangeForApartment(String aptName) {
+        log.info("아파트 '{}' 의 면적 범위 업데이트를 시작합니다.", aptName);
+
+        // 1. 해당 아파트 이름의 모든 Property 조회
+        List<Property> properties = propertyRepository.findAllByAptName(aptName);
+
+        if (properties.isEmpty()) {
+            log.warn("아파트 '{}'에 대한 Property가 존재하지 않습니다.", aptName);
+            return;
+        }
+
+        // 2. 해당 아파트의 모든 거래 데이터에서 최소/최대 면적 조회
+        Object[] minMaxAreas = propertyDetailRepository.findMinMaxAreaByAptName(aptName);
+
+        if (minMaxAreas == null || minMaxAreas.length < 2) {
+            log.warn("아파트 '{}'에 대한 면적 데이터 조회 결과가 없습니다.", aptName);
+            return;
+        }
+
+        if (minMaxAreas[0] == null || minMaxAreas[1] == null) {
+            log.warn("아파트 '{}'에 대한 유효한 면적 데이터가 존재하지 않습니다.", aptName);
+            return;
+        }
+
+        Double minArea = (Double) minMaxAreas[0];
+        Double maxArea = (Double) minMaxAreas[1];
+
+        log.info("아파트 '{}' 의 계산된 면적 범위: {} ~ {}㎡", aptName, minArea, maxArea);
+
+        // 3. 해당 아파트의 모든 Property에 면적 범위 업데이트
+        for (Property property : properties) {
+            property.updateAreaRange(minArea, maxArea);
+            log.debug("Property ID {} 의 면적 범위가 업데이트되었습니다.", property.getPropertyId());
+        }
+
+        // 4. 변경사항 저장 (트랜잭션으로 인해 자동 저장됨)
+        log.info("아파트 '{}' 의 면적 범위 업데이트가 완료되었습니다. (총 {}개 Property 업데이트)",
+                 aptName, properties.size());
+    }
+
+    /**
+     * 모든 아파트의 면적 범위를 일괄 업데이트 (초기 설정 또는 전체 재계산 시 사용)
+     */
+    @Transactional
+    public void updateAllApartmentAreaRanges() {
+        log.info("모든 아파트의 면적 범위 일괄 업데이트를 시작합니다.");
+
+        // 모든 고유한 아파트 이름 조회
+        List<String> allAptNames = propertyRepository.findAll()
+                .stream()
+                .map(Property::getAptName)
+                .distinct()
+                .toList();
+
+        log.info("총 {}개의 고유한 아파트에 대해 면적 범위를 업데이트합니다.", allAptNames.size());
+
+        updateAreaRangesForMultipleApartments(new HashSet<>(allAptNames));
+
+        log.info("모든 아파트의 면적 범위 일괄 업데이트가 완료되었습니다.");
+    }
+
+    /**
      * 여러 아파트의 가격 범위를 효율적으로 일괄 업데이트 (최적화된 쿼리 사용)
      * @param aptNames 업데이트할 아파트 이름 집합
      */
@@ -294,6 +362,70 @@ public class PropertyService {
             
         } catch (Exception e) {
             log.error("가격 범위 일괄 업데이트 중 전체 오류 발생: {}", e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 여러 아파트의 면적 범위를 효율적으로 일괄 업데이트 (최적화된 쿼리 사용)
+     * @param aptNames 업데이트할 아파트 이름 집합
+     */
+    @Transactional
+    public void updateAreaRangesForMultipleApartments(Set<String> aptNames) {
+        log.info("{}개 아파트의 면적 범위 일괄 업데이트를 시작합니다.", aptNames.size());
+
+        try {
+            // 1. 한 번의 쿼리로 모든 아파트의 최소/최대 면적 조회
+            List<Object[]> areaRanges = propertyDetailRepository.findMinMaxAreasByAptNames(aptNames);
+
+            if (areaRanges.isEmpty()) {
+                log.warn("요청한 아파트들에 대한 면적 데이터가 존재하지 않습니다.");
+                return;
+            }
+
+            // 2. 아파트별로 Property들을 조회하고 면적 범위 업데이트
+            int successCount = 0;
+            int failCount = 0;
+
+            for (Object[] areaRange : areaRanges) {
+                String aptName = (String) areaRange[0];
+                Double minArea = (Double) areaRange[1];
+                Double maxArea = (Double) areaRange[2];
+
+                if (minArea == null || maxArea == null) {
+                    log.warn("아파트 '{}'에 대한 유효한 면적 데이터가 없습니다.", aptName);
+                    failCount++;
+                    continue;
+                }
+
+                try {
+                    // 해당 아파트의 모든 Property 조회 및 업데이트
+                    List<Property> properties = propertyRepository.findAllByAptName(aptName);
+
+                    if (properties.isEmpty()) {
+                        log.warn("아파트 '{}'에 대한 Property가 존재하지 않습니다.", aptName);
+                        failCount++;
+                        continue;
+                    }
+
+                    // 모든 Property에 면적 범위 업데이트
+                    for (Property property : properties) {
+                        property.updateAreaRange(minArea, maxArea);
+                    }
+
+                    log.debug("아파트 '{}' 면적 범위 업데이트 완료: {}㎡ ~ {}㎡ ({}개 Property)",
+                             aptName, minArea, maxArea, properties.size());
+                    successCount++;
+
+                } catch (Exception e) {
+                    log.error("아파트 '{}' 면적 범위 업데이트 중 오류 발생: {}", aptName, e.getMessage(), e);
+                    failCount++;
+                }
+            }
+
+            log.info("면적 범위 일괄 업데이트 완료: 성공 {}개, 실패 {}개", successCount, failCount);
+
+        } catch (Exception e) {
+            log.error("면적 범위 일괄 업데이트 중 전체 오류 발생: {}", e.getMessage(), e);
         }
     }
 
