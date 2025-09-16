@@ -19,8 +19,8 @@ public class PropertyDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "price_id")
-    private Long priceId;
+    @Column(name = "id")
+    private Long id;
 
     @Column(name = "price", nullable = false)
     private String price;

@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.example.backend.common.response.ApiResponse;
+import com.example.backend.dto.response.GetPropertyDetailInfoResponse;
 import com.example.backend.dto.response.GetPropertyPrices;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,8 +61,8 @@ public class PropertyService {
         log.info("총 {}개 지역에 대한 1년치 데이터 수집을 시작합니다...", allLawdCodes.size());
 
         // 2. 수집할 기간을 설정합니다. (예: 2015년 1월 ~ 2024년 12월)
-        YearMonth startMonth = YearMonth.of(2023, 8);
-        YearMonth endMonth = YearMonth.of(2025, 8);
+        YearMonth startMonth = YearMonth.of(2020, 9);
+        YearMonth endMonth = YearMonth.of(2025, 9);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMM");
         // 3. 중첩 반복문: (바깥쪽) 지역 코드 -> (안쪽) 날짜
@@ -445,6 +447,19 @@ public class PropertyService {
             .build();
     }
 
-
+    public List<GetPropertyDetailInfoResponse> getPropertyDetails(Long propertyId) {
+        Property property = propertyRepository.findById(propertyId).orElseThrow(
+            () -> new BusinessException(CommonStatus.PROPERTY_NOT_FOUND));
+        List<PropertyDetail> propertyDetails = propertyDetailRepository.findAllByProperty(property);
+        return propertyDetails.stream()
+            .map(pd -> GetPropertyDetailInfoResponse.builder()
+                .propertyDetailId(pd.getId())
+                .area(pd.getArea())
+                .floor(pd.getFloor())
+                .price(pd.getPrice())
+                .dealDate(pd.getDealDate().toString())
+                .build())
+            .toList();
+    }
 }
 

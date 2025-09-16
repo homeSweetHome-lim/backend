@@ -3,6 +3,7 @@ package com.example.backend.repository;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,4 +27,6 @@ public interface PropertyRepository extends JpaRepository<Property, Long> {
      * @return 해당 아파트 이름의 모든 Property 리스트
      */
     List<Property> findAllByAptName(String aptName);
+
+    List<Property> findByAptNameInAndLawdCodeLawdCodeIn(Set<String> aptNamesInRequest, Set<String> lawdCodesInRequest);
 }

@@ -2,6 +2,7 @@ package com.example.backend.controller;
 
 import java.util.List;
 
+import com.example.backend.dto.response.GetPropertyDetailInfoResponse;
 import com.example.backend.dto.response.GetPropertyPrices;
 
 import org.springdoc.core.annotations.ParameterObject;
@@ -88,6 +89,13 @@ public class PropertyController {
     public ResponseEntity<ApiResponse<Void>> updateAllPriceRanges() {
         propertyService.updateAllApartmentPriceRanges();
         return ResponseEntity.ok().body(ApiResponse.success());
+    }
+
+    @GetMapping("/{propertyId}/property-list")
+    public ResponseEntity<ApiResponse<List<GetPropertyDetailInfoResponse>>> getPropertyInfo(
+        @PathVariable Long propertyId
+    ) {
+        return ApiResponseFactory.success(propertyService.getPropertyDetails(propertyId));
     }
 
 }

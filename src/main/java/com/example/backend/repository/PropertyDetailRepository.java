@@ -58,4 +58,6 @@ public interface PropertyDetailRepository extends JpaRepository<PropertyDetail,L
            "WHERE p.aptName IN :aptNames AND pd.area IS NOT NULL " +
            "GROUP BY p.aptName")
     List<Object[]> findMinMaxAreasByAptNames(@Param("aptNames") Collection<String> aptNames);
+
+    List<PropertyDetail> findAllByProperty(Property property);
 }
