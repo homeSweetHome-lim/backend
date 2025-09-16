@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.example.backend.common.response.ApiResponse;
 import com.example.backend.dto.response.GetPropertyDetailInfoResponse;
@@ -25,9 +26,11 @@ import com.example.backend.dto.request.GetPropertiesByFilterRequest;
 import com.example.backend.dto.request.PostPropertyRequest;
 import com.example.backend.dto.request.PublicApiRequest;
 import com.example.backend.dto.response.GetPropertyInfoResponse;
+import com.example.backend.dto.response.GetPropertyPricesWithAreaType;
 import com.example.backend.entity.LawdCode;
 import com.example.backend.entity.Property;
 import com.example.backend.entity.PropertyDetail;
+import com.example.backend.entity.enums.AreaType;
 import com.example.backend.entity.enums.PropertyType;
 import com.example.backend.repository.LawdCodeRepository;
 import com.example.backend.repository.PropertyDetailRepository;
@@ -61,8 +64,8 @@ public class PropertyService {
         log.info("총 {}개 지역에 대한 1년치 데이터 수집을 시작합니다...", allLawdCodes.size());
 
         // 2. 수집할 기간을 설정합니다. (예: 2015년 1월 ~ 2024년 12월)
-        YearMonth startMonth = YearMonth.of(2020, 9);
-        YearMonth endMonth = YearMonth.of(2025, 9);
+        YearMonth startMonth = YearMonth.of(2025, 5);
+        YearMonth endMonth = YearMonth.of(2025, 6);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMM");
         // 3. 중첩 반복문: (바깥쪽) 지역 코드 -> (안쪽) 날짜
@@ -460,6 +463,29 @@ public class PropertyService {
                 .dealDate(pd.getDealDate().toString())
                 .build())
             .toList();
+    }
+
+    public List<GetPropertyPricesWithAreaType> getPropertyPricesDividedByArea(Long propertyId) {
+        Property property = propertyRepository.findById(propertyId).orElseThrow(
+            () -> new BusinessException(CommonStatus.PROPERTY_NOT_FOUND));
+
+        List<PropertyDetail> allDetails = propertyDetailRepository.findAllByProperty(property);
+        // 3. Stream의 groupingBy를 사용해 AreaType별로 그룹화하고,
+        //    동시에 내부 리스트를 DatePriceMap으로 변환합니다.
+        Map<AreaType, List<GetPropertyPricesWithAreaType.DatePriceMap>> pricesByAreaType = allDetails.stream()
+            .collect(Collectors.groupingBy(
+                PropertyDetail::getAreaType, // AreaType을 기준으로 그룹화
+                Collectors.mapping(          // 그룹화된 값들을 변환
+                    pdt -> new GetPropertyPricesWithAreaType.DatePriceMap(pdt.getDealDate(), pdt.getPrice()),
+                    Collectors.toList()
+                )
+            ));
+
+        // 4. 만들어진 Map을 최종 응답 형태인 List<GetPropertyPricesWithAreaType>으로 변환합니다.
+        return pricesByAreaType.entrySet().stream()
+            .map(entry -> new GetPropertyPricesWithAreaType(entry.getKey(), entry.getValue()))
+            .toList(); // .collect(Collectors.toList())와 동일
+
     }
 }
 

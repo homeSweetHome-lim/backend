@@ -28,5 +28,5 @@ public interface PropertyRepository extends JpaRepository<Property, Long> {
      */
     List<Property> findAllByAptName(String aptName);
 
-    List<Property> findByAptNameInAndLawdCodeLawdCodeIn(Set<String> aptNamesInRequest, Set<String> lawdCodesInRequest);
+    List<Property> findByAptNameInAndLawdCodeLawdCodeIn(java.util.Set<java.lang.String> aptNamesInRequest, java.util.Set<java.lang.String> lawdCodesInRequest);
 }

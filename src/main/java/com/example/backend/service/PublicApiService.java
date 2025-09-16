@@ -19,6 +19,7 @@ import com.example.backend.dto.request.PublicApiRequest;
 import com.example.backend.dto.response.PublicApiResponse;
 import com.example.backend.entity.LawdCode;
 import com.example.backend.entity.Property;
+import com.example.backend.entity.enums.AreaType;
 import com.example.backend.entity.enums.PropertyType;
 import com.example.backend.entity.enums.TransactionType;
 import com.example.backend.repository.LawdCodeRepository;
@@ -171,6 +172,7 @@ public class PublicApiService {
                     .area(p.exclusiveUseArea())
                     .price(p.dealAmount())
                     .transactionType(TransactionType.SALE)
+                    .areaType(AreaType.findByArea(p.exclusiveUseArea()))
                     .property(property)
                     .build();
 

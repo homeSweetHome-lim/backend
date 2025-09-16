@@ -2,6 +2,7 @@ package com.example.backend.entity;
 
 import java.time.LocalDate;
 
+import com.example.backend.entity.enums.AreaType;
 import com.example.backend.entity.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -41,4 +42,8 @@ public class PropertyDetail {
     @ManyToOne
     @JoinColumn(name = "property_id", nullable = false)
     private Property property;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "area_type")
+    private AreaType areaType;
 }

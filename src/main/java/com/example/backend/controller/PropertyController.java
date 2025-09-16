@@ -22,6 +22,7 @@ import com.example.backend.common.response.ApiResponse;
 import com.example.backend.common.response.ApiResponseFactory;
 import com.example.backend.dto.request.PostPropertyRequest;
 import com.example.backend.dto.response.GetPropertyInfoResponse;
+import com.example.backend.dto.response.GetPropertyPricesWithAreaType;
 import com.example.backend.service.PropertyService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -96,6 +97,13 @@ public class PropertyController {
         @PathVariable Long propertyId
     ) {
         return ApiResponseFactory.success(propertyService.getPropertyDetails(propertyId));
+    }
+
+    @GetMapping("/{propertyId}/property-list/mapping")
+    public ResponseEntity<ApiResponse<List<GetPropertyPricesWithAreaType>>> getPropertyPricesDividedByArea(
+        @PathVariable Long propertyId
+    ) {
+        return ApiResponseFactory.success(propertyService.getPropertyPricesDividedByArea(propertyId));
     }
 
 }

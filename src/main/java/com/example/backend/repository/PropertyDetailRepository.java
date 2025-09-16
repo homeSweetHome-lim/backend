@@ -2,6 +2,8 @@ package com.example.backend.repository;
 
 import com.example.backend.entity.Property;
 import com.example.backend.entity.PropertyDetail;
+import com.example.backend.entity.enums.AreaType;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -60,4 +62,6 @@ public interface PropertyDetailRepository extends JpaRepository<PropertyDetail,L
     List<Object[]> findMinMaxAreasByAptNames(@Param("aptNames") Collection<String> aptNames);
 
     List<PropertyDetail> findAllByProperty(Property property);
+
+    List<PropertyDetail> findAllByPropertyAndAreaType(Property property, AreaType areaType);
 }
