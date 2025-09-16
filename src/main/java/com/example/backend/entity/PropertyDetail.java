@@ -2,6 +2,7 @@ package com.example.backend.entity;
 
 import java.time.LocalDate;
 
+import com.example.backend.entity.enums.AreaType;
 import com.example.backend.entity.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,8 +20,8 @@ public class PropertyDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "price_id")
-    private Long priceId;
+    @Column(name = "id")
+    private Long id;
 
     @Column(name = "price", nullable = false)
     private String price;
@@ -41,4 +42,8 @@ public class PropertyDetail {
     @ManyToOne
     @JoinColumn(name = "property_id", nullable = false)
     private Property property;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "area_type")
+    private AreaType areaType;
 }
