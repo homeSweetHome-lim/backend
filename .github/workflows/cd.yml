@@ -69,19 +69,19 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           command_timeout: 10m
           script: |
-            set -e
-            
-            REPO_NAME="backend"
-            if [ ! -d "$REPO_NAME" ]; then
-              git clone https://${{ secrets.GIT_TOKEN }}@github.com/${{ github.repository }}.git $REPO_NAME
-            fi
-            
-            cd $REPO_NAME
-            
-            git pull
-            
-            echo "${{ secrets.APPLICATION_ENV }}" > ./.env
-            
-            sudo docker compose pull
-            
-            sudo docker compose up -d --build
+             set -e
+             
+             REPO_NAME="backend"
+             if [ ! -d "$REPO_NAME" ]; then
+               git clone https://${{ secrets.GIT_TOKEN }}@github.com/${{ github.repository }}.git $REPO_NAME
+             fi
+
+             cd $REPO_NAME
+
+             git pull
+
+             echo "${{ secrets.APPLICATION_ENV }}" > ./.env
+
+             sudo docker compose pull
+
+             sudo docker compose up -d --build

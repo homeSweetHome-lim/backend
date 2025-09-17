@@ -18,7 +18,5 @@ services:
     networks:
       - shared-net
 
-    # ✅ 'shared-net'이 이 파일 외부에서 생성된 네트워크임을 명시.
 networks:
   shared-net:
-    external: true
