@@ -15,12 +15,18 @@ public final class SecurityWhitelist {
         "/api/auth/**"
     };
 
+    // 매물 관련 공개 경로 (검색은 인증 없이 가능)
+    public static final String[] PROPERTY = new String[] {
+        "/api/property/filter/**"
+    };
+
     // 전체 permitAll 경로 (필요시 여기에 추가)
     public static final String[] PERMIT_ALL = new String[] {
         "/v3/api-docs/**",
         "/swagger-ui/**",
         "/swagger-ui.html",
-        "/api/auth/**"
+        "/api/auth/**",
+        "/api/property/filter/**"
     };
 
     // 커스텀 필터에서 아예 거르도록(미적용) 할 경로

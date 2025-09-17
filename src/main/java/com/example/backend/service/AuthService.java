@@ -9,7 +9,7 @@ import com.example.backend.dto.request.LoginRequest;
 import com.example.backend.dto.request.SignupRequest;
 import com.example.backend.dto.response.LoginResponse;
 import com.example.backend.entity.User;
-import com.example.backend.entity.UserRole;
+import com.example.backend.entity.enums.UserRole;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.security.JwtUtil;
 

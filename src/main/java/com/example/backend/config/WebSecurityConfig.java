@@ -64,6 +64,7 @@ public class WebSecurityConfig {
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // 정적 리소스(css, js) 허용
                 .requestMatchers(SecurityWhitelist.SWAGGER).permitAll()
                 .requestMatchers(SecurityWhitelist.AUTH).permitAll() // 회원가입/로그인
+                .requestMatchers(SecurityWhitelist.PROPERTY).permitAll() // 매물 검색
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Preflight 요청 허용
 
                 .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요

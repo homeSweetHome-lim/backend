@@ -1,7 +1,7 @@
 name: CD
 
 on:
-   # CI 워크플로우가 완료되었을 때만 실행
+  # CI 워크플로우가 완료되었을 때만 실행
   workflow_run:
     workflows: ["Java CI with Gradle"]
     types:
@@ -31,7 +31,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
 
-# -------------------- ▼▼▼ Docker 관련 로직 추가 ▼▼▼ --------------------
+      # -------------------- ▼▼▼ Docker 관련 로직 추가 ▼▼▼ --------------------
 
       # 1. Docker Hub 로그인
       - name: Login to Docker Hub
@@ -58,7 +58,7 @@ jobs:
           build-args: |
             JAR_FILE=${{ env.JAR_FILE }} # Dockerfile 내부에서 사용할 변수 전달
 
-     # -------------------- ▼▼▼ SSH 원격 배포 로직 추가 ▼▼▼ --------------------
+      # -------------------- ▼▼▼ SSH 원격 배포 로직 추가 ▼▼▼ --------------------
 
       # 4. SSH로 서버에 접속하여 배포 스크립트 실행
       - name: Deploy to Server via SSH

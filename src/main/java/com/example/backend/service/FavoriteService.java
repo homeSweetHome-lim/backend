@@ -2,7 +2,6 @@ package com.example.backend.service;
 
 import com.example.backend.common.CommonStatus;
 import com.example.backend.common.exception.BusinessException;
-import com.example.backend.dto.request.AddFavoriteRequest;
 import com.example.backend.dto.response.GetPropertyInfoResponse;
 import com.example.backend.entity.Favorite;
 import com.example.backend.entity.Property;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -66,11 +64,11 @@ public class FavoriteService {
                 .state(p.getLawdCode().getState())
                 .si(p.getLawdCode().getSi())
                 .dong(p.getLawdCode().getDong())
-                .price(p.getPrice())
-                .area(p.getArea())
-                .floor(p.getFloor())
+                .maxPrice(p.getMaxPrice())
+                .minPrice(p.getMinPrice())
+                .minArea(p.getMinArea())
+                .maxArea(p.getMaxArea())
                 .buildYear(p.getBuildYear())
-                .dealDate(p.getDealDate())
                 .aptName(p.getAptName())
                 .propertyType(p.getPropertyType())
                 .build()).toList();

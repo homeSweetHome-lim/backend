@@ -17,6 +17,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.example.backend.entity.enums.UserRole;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
