@@ -66,6 +66,8 @@ public class FavoriteService {
                 .dong(p.getLawdCode().getDong())
                 .maxPrice(p.getMaxPrice())
                 .minPrice(p.getMinPrice())
+                .minArea(p.getMinArea())
+                .maxArea(p.getMaxArea())
                 .buildYear(p.getBuildYear())
                 .aptName(p.getAptName())
                 .propertyType(p.getPropertyType())
