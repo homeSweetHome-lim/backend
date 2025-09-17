@@ -57,11 +57,11 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/our-home:latest # Docker 이미지 태그
           build-args: |
             JAR_FILE=${{ env.JAR_FILE }} # Dockerfile 내부에서 사용할 변수 전달
-            platforms: linux/arm64 #서버 유형 지정
+          platforms: linux/arm64 #서버 유형 지정
 
-      # -------------------- ▼▼▼ SSH 원격 배포 로직 추가 ▼▼▼ --------------------
+      # -------------------- ▼▼▼ SSH 원격 배포 ▼▼▼ --------------------
 
-      # 4. SSH로 서버에 접속하여 배포 스크립트 실행
+      # 4. SSH로 서버에 접속 -> 배포 스크립트 실행
       - name: Deploy to Server via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:

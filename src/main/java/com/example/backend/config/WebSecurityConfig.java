@@ -82,7 +82,7 @@ public class WebSecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // 1. 허용할 URL 설정하기
-        configuration.setAllowedOrigins(List.of("https://home.mins.work", "http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of("https://myhome.mins.work", "http://localhost:3000"));
 
         // 2. 허용할 HTTP 메서드
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
