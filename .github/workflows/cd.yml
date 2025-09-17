@@ -57,6 +57,7 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/our-home:latest # Docker 이미지 태그
           build-args: |
             JAR_FILE=${{ env.JAR_FILE }} # Dockerfile 내부에서 사용할 변수 전달
+            platforms: linux/arm64 #서버 유형 지정
 
       # -------------------- ▼▼▼ SSH 원격 배포 로직 추가 ▼▼▼ --------------------
 
