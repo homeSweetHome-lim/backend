@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import com.example.backend.entity.PropertyDetail;
 import com.example.backend.entity.PropertyKey;
 import com.example.backend.repository.PropertyDetailRepository;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -33,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class PublicApiService {
+
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final PropertyRepository propertyRepository;

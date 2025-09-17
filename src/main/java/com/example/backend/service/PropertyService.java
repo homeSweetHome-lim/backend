@@ -145,6 +145,9 @@ public class PropertyService {
     public Page<GetPropertyInfoResponse> getContentList(String state, String si, String dong, Pageable pageable) {
 
         log.info("도 : {}, 시: {}, 동 : {}", state, si, dong);
+        // if ( dong == null) {
+        //     List<Law> findDongs = lawdCodeRepository.find
+        // }
         LawdCode lawdCode = lawdCodeRepository.findByStateAndSiAndDong(state, si, dong)
             .orElseThrow(()-> new BusinessException(CommonStatus.LAWD_CODE_NOT_FOUND));
 
