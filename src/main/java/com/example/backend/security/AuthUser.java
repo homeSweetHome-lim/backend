@@ -8,7 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.backend.entity.User;
-import com.example.backend.entity.UserRole;
+import com.example.backend.entity.enums.UserRole;
 
 public record AuthUser(User user) implements UserDetails {
     @Override
