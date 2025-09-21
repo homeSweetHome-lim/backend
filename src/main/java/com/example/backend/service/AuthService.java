@@ -39,7 +39,7 @@ public class AuthService {
             .nickname(signupRequest.nickname())
             .email(signupRequest.email())
             .password(encodedPassword)
-            .check(false)
+            .isChecked(false)
             .build();
 
         userRepository.save(newUser);
@@ -53,7 +53,7 @@ public class AuthService {
         if (!passwordEncoder.matches(request.password(), findUser.getPassword())) {
             throw new BusinessException(CommonStatus.PASSWORD_NOT_MATCH);
         }
-        if (!findUser.getCheck()) {
+        if (!findUser.getIsChecked()) {
             throw new BusinessException(CommonStatus.NOT_CHECKED_USER);
         }
 
