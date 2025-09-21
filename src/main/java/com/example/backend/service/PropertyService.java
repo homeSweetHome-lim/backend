@@ -3,6 +3,7 @@ package com.example.backend.service;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -53,9 +54,15 @@ public class PropertyService {
     private final PublicApiService publicApiService;
 
     @Async // ✅ 이 메서드는 별도의 스레드에서 비동기로 실행됩니다.
-    public void startScrapingAllRegions() {
+    public void startScrapingAllRegions(PostPropertyRequest.LawdCode request) {
+        List<String> allLawdCodes = new ArrayList<>();
+        allLawdCodes.add(request.getLawdCode());
+        log.info("요청한 lawd code 추가 : {}", allLawdCodes.getFirst());
+        if (allLawdCodes.isEmpty()){
+            log.info("요청한 lawd code 없음. 전체 리스트로 추가");
+            allLawdCodes = lawdCodeRepository.findAll().stream().map(LawdCode::getLawdCode).distinct().toList();
+        }
         // 1. DB에서 모든 지역 코드(LawdCode) 엔티티를 가져옵니다.
-        List<String> allLawdCodes = lawdCodeRepository.findAll().stream().map(LawdCode::getLawdCode).distinct().toList();
         if (allLawdCodes.isEmpty()) {
             log.warn("DB에 저장된 지역 코드가 없어 데이터 수집을 시작할 수 없습니다.");
             return;
@@ -64,8 +71,8 @@ public class PropertyService {
         log.info("총 {}개 지역에 대한 1년치 데이터 수집을 시작합니다...", allLawdCodes.size());
 
         // 2. 수집할 기간을 설정합니다. (예: 2015년 1월 ~ 2024년 12월)
-        YearMonth startMonth = YearMonth.of(2025, 5);
-        YearMonth endMonth = YearMonth.of(2025, 6);
+        YearMonth startMonth = YearMonth.of(2015, 8);
+        YearMonth endMonth = YearMonth.of(2025, 9);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMM");
         // 3. 중첩 반복문: (바깥쪽) 지역 코드 -> (안쪽) 날짜

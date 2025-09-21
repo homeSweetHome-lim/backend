@@ -50,4 +50,6 @@ public class User {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "check", nullable = false)
+    private Boolean check;
 }

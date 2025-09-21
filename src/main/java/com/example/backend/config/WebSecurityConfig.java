@@ -27,6 +27,7 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class WebSecurityConfig {
+
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
 
@@ -82,7 +83,7 @@ public class WebSecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // 1. 허용할 URL 설정하기
-        configuration.setAllowedOrigins(List.of("https://myhome.mins.work", "http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of("https://myhome.mins.work", "http://localhost:3000", "https://front-end-div.pages.dev"));
 
         // 2. 허용할 HTTP 메서드
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));

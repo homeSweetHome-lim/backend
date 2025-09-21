@@ -107,6 +107,31 @@ public class PublicApiService {
         saveAllPropertiesInfo(allTradeItems);
     }
 
+    /**
+     * 문자열을 정규화하여 일관성 있는 비교를 위한 유틸리티 메서드
+     * @param str 정규화할 문자열
+     * @return 정규화된 문자열
+     */
+    private String normalizeString(String str) {
+        if (str == null) {
+            return null;
+        }
+        return str.trim()                    // 앞뒤 공백 제거
+                  .replaceAll("\\s+", " ")   // 연속된 공백을 하나로 변환
+                  .replaceAll("[\\u200B-\\u200D\\uFEFF]", "") // 보이지 않는 문자 제거
+                  .toUpperCase();            // 대소문자 통일
+    }
+
+    /**
+     * PropertyKey를 안전하게 생성하는 유틸리티 메서드
+     * @param aptName 아파트명
+     * @param lawdCode 법정동코드
+     * @return 정규화된 PropertyKey
+     */
+    private PropertyKey createNormalizedPropertyKey(String aptName, String lawdCode) {
+        return new PropertyKey(normalizeString(aptName), normalizeString(lawdCode));
+    }
+
     @Transactional
     protected void saveAllPropertiesInfo(List<PublicApiResponse.TradeItem> allTradeItems) {
 
@@ -124,12 +149,11 @@ public class PublicApiService {
         List<Property> existingProperties = propertyRepository.findByAptNameInAndLawdCodeLawdCodeIn(aptNamesInRequest, lawdCodesInRequest);
 
 
-        // --- 3. 조회된 데이터를 PropertyKey를 키로 하는 Map으로 변환 ---
-        //    (DB에 중복이 있을 경우를 대비해 merge function을 추가하는 것이 안전합니다)
+        // --- 3. 조회된 데이터를 정규화된 PropertyKey를 키로 하는 Map으로 변환 ---
         Map<PropertyKey, Property> existingPropertiesMap = existingProperties.stream()
             .collect(Collectors.toMap(
-                // Key 생성: new PropertyKey(아파트명, 법정동코드)
-                property -> new PropertyKey(property.getAptName(), property.getLawdCode().getLawdCode()),
+                // 정규화된 PropertyKey 생성
+                property -> createNormalizedPropertyKey(property.getAptName(), property.getLawdCode().getLawdCode()),
                 property -> property,
                 (existing, replacement) -> existing // 중복 키 발생 시 기존 값 유지
             ));
@@ -139,7 +163,7 @@ public class PublicApiService {
         List<Property> newPropertiesToSave = new ArrayList<>();
         for (PublicApiResponse.TradeItem p : allTradeItems) {
             LawdCode lawdCode = getLawdCode(p.sggCode(), p.umdName());
-            PropertyKey propertyKey = new PropertyKey(p.aptName(), lawdCode.getLawdCode());
+            PropertyKey propertyKey = createNormalizedPropertyKey(p.aptName(), lawdCode.getLawdCode());
 
             if (!existingPropertiesMap.containsKey(propertyKey)) {
                 Property newProperty = Property.builder()
@@ -149,37 +173,78 @@ public class PublicApiService {
                         .lawdCode(lawdCode)
                         .build();
                 newPropertiesToSave.add(newProperty);
+                // 중복 체크를 위해 임시로 맵에 추가
+                existingPropertiesMap.put(propertyKey, newProperty);
             }
         }
 
         if (!newPropertiesToSave.isEmpty()) {
-            propertyRepository.saveAll(newPropertiesToSave);
-            // 새로 저장된 Property들을 맵에 추가
-            for (Property property : newPropertiesToSave) {
-                PropertyKey propertyKey = new PropertyKey(property.getAptName(), property.getLawdCode().getLawdCode());
-                existingPropertiesMap.put(propertyKey, property);
+            try {
+                List<Property> savedProperties = propertyRepository.saveAll(newPropertiesToSave);
+                // 저장된 Property들을 ID가 할당된 상태로 맵에 다시 추가
+                for (Property property : savedProperties) {
+                    PropertyKey propertyKey = createNormalizedPropertyKey(property.getAptName(), property.getLawdCode().getLawdCode());
+                    existingPropertiesMap.put(propertyKey, property);
+                }
+                log.info("새로운 Property {} 개가 저장되었습니다.", savedProperties.size());
+            } catch (Exception e) {
+                // 중복 키 예외나 기타 예외 발생 시 기존 데이터를 다시 조회
+                log.warn("Property 저장 중 오류 발생 (동시성 이슈 가능성): {}. 기존 데이터를 다시 조회합니다.", e.getMessage());
+
+                // 실패한 Property들에 대해 다시 조회해서 맵에 추가
+                for (Property newProperty : newPropertiesToSave) {
+                    PropertyKey propertyKey = createNormalizedPropertyKey(newProperty.getAptName(), newProperty.getLawdCode().getLawdCode());
+                    List<Property> existingPropsForApt = propertyRepository.findByAptNameInAndLawdCodeLawdCodeIn(
+                        Set.of(newProperty.getAptName()),
+                        Set.of(newProperty.getLawdCode().getLawdCode())
+                    );
+
+                    if (!existingPropsForApt.isEmpty()) {
+                        existingPropertiesMap.put(propertyKey, existingPropsForApt.get(0));
+                    }
+                }
             }
-            log.info("새로운 Property {} 개가 저장되었습니다.", newPropertiesToSave.size());
         }
 
         // 모든 PropertyDetail을 일괄로 저장
         List<PropertyDetail> detailsToSave = new ArrayList<>();
+        int skipCount = 0;
+
         for (PublicApiResponse.TradeItem p : allTradeItems) {
-            LawdCode lawdCode = getLawdCode(p.sggCode(), p.umdName());
-            PropertyKey propertyKey = new PropertyKey(p.aptName(), lawdCode.getLawdCode());
-            Property property = existingPropertiesMap.get(propertyKey);
+            try {
+                LawdCode lawdCode = getLawdCode(p.sggCode(), p.umdName());
+                PropertyKey propertyKey = createNormalizedPropertyKey(p.aptName(), lawdCode.getLawdCode());
+                Property property = existingPropertiesMap.get(propertyKey);
 
-            PropertyDetail propertyDetail = PropertyDetail.builder()
-                    .floor(p.floor())
-                    .dealDate(LocalDate.of(p.dealYear(), p.dealMonth(), p.dealDay()))
-                    .area(p.exclusiveUseArea())
-                    .price(p.dealAmount())
-                    .transactionType(TransactionType.SALE)
-                    .areaType(AreaType.findByArea(p.exclusiveUseArea()))
-                    .property(property)
-                    .build();
+                // Property가 존재하지 않는 경우 로그 기록 후 스킵
+                if (property == null) {
+                    log.warn("PropertyDetail 생성 실패: Property를 찾을 수 없음 (아파트명: {}, 법정동코드: {})",
+                             p.aptName(), lawdCode.getLawdCode());
+                    skipCount++;
+                    continue;
+                }
 
-            detailsToSave.add(propertyDetail);
+                PropertyDetail propertyDetail = PropertyDetail.builder()
+                        .floor(p.floor())
+                        .dealDate(LocalDate.of(p.dealYear(), p.dealMonth(), p.dealDay()))
+                        .area(p.exclusiveUseArea())
+                        .price(p.dealAmount())
+                        .transactionType(TransactionType.SALE)
+                        .areaType(AreaType.findByArea(p.exclusiveUseArea()))
+                        .property(property)
+                        .build();
+
+                detailsToSave.add(propertyDetail);
+
+            } catch (Exception e) {
+                log.error("PropertyDetail 생성 중 오류 발생 (아파트명: {}, 거래일: {}-{}-{}): {}",
+                         p.aptName(), p.dealYear(), p.dealMonth(), p.dealDay(), e.getMessage(), e);
+                skipCount++;
+            }
+        }
+
+        if (skipCount > 0) {
+            log.warn("총 {}개의 PropertyDetail이 생성되지 않았습니다.", skipCount);
         }
 
         // PropertyDetail 일괄 저장

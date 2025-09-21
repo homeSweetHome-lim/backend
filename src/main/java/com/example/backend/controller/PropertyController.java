@@ -26,6 +26,7 @@ import com.example.backend.dto.response.GetPropertyPricesWithAreaType;
 import com.example.backend.service.PropertyService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -53,8 +54,9 @@ public class PropertyController {
     @Operation(description = "비동기로 데이터 풀링")
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> postProperties(
+        @Nullable @RequestBody PostPropertyRequest.LawdCode request
     ){
-        propertyService.startScrapingAllRegions();
+        propertyService.startScrapingAllRegions(request);
 
         return ResponseEntity.ok().body(ApiResponse.success());
     }
@@ -105,5 +107,7 @@ public class PropertyController {
     ) {
         return ApiResponseFactory.success(propertyService.getPropertyPricesDividedByArea(propertyId));
     }
+
+
 
 }

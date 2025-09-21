@@ -27,7 +27,13 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "properties")
+@Table(name = "properties",
+       uniqueConstraints = {
+           @UniqueConstraint(
+               name = "uk_property_apt_name_lawd_code",
+               columnNames = {"apt_name", "lawd_code_id"}
+           )
+       })
 @EntityListeners(AuditingEntityListener.class)
 public class Property {
     
