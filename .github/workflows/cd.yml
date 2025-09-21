@@ -47,6 +47,13 @@ jobs:
           echo "JAR_FILE=${JAR_FILE}" >> $GITHUB_ENV
         shell: bash
 
+      # + 서버 설정 이슈
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       # 3. Docker 이미지 빌드 및 푸시
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -54,7 +61,7 @@ jobs:
           context: . # Dockerfile 위치 (프로젝트 루트)
           file: ./Dockerfile # Dockerfile 이름
           push: true # 빌드 후 푸시 실행
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/our-home:latest # Docker 이미지 태그
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/myhome:latest # Docker 이미지 태그
           build-args: |
             JAR_FILE=${{ env.JAR_FILE }} # Dockerfile 내부에서 사용할 변수 전달
           #서버 유형 지정

@@ -1,8 +1,8 @@
 version: '3.8'
 services:
   main-server:
-    container_name: main-server
-    image: minjee12/our-home:latest
+    container_name: myhome-server
+    image: minjee12/myhome:latest
     restart: always
     ports:
       - "8080:8080"
@@ -13,3 +13,4 @@ services:
 
 networks:
   shared-net:
+
